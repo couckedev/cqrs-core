@@ -1,6 +1,6 @@
 {
   "name": "@couckedev/cqrs-core",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Core DDD classes, interfaces, etc",
   "type": "module",
   "main": "./dist/index.cjs",
