@@ -1,55 +1,41 @@
-name: Publish unstable
-
-on:
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
-
-permissions:
-  contents: read
-  packages: write
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+env:
+  NODE_VERSION: 26
 
 jobs:
   publish-unstable:
-    name: Publish unstable (next)
-    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
+    if: >
+      github.event.pull_request.merged &&
+      !startsWith(github.head_ref, 'release-please--')
+
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           registry-url: https://npm.pkg.github.com
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: pnpm build
+      - run: pnpm typecheck
 
-      - name: Bump version to prerelease
+      - run: pnpm test
+
+      - run: pnpm build
+
+      - name: Create prerelease version
         run: |
-          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
-          CURRENT_VERSION=$(jq -r .version package.json)
-          PRERELEASE_VERSION="${CURRENT_VERSION}-next.${SHORT_SHA}"
-          jq --arg ver "$PRERELEASE_VERSION" '.version = $ver' package.json > package.json.tmp
-          mv package.json.tmp package.json
-          echo "Prerelease version: ${PRERELEASE_VERSION}"
+          SHORT_SHA="${GITHUB_SHA::7}"
+          VERSION=$(node -p "require('./package.json').version")
+          npm version "${VERSION}-next.${SHORT_SHA}" \
+            --no-git-tag-version \
+            --allow-same-version
 
-      - name: Publish unstable to GitHub Packages
-        run: pnpm publish --no-git-checks --tag next
+      - run: pnpm publish --no-git-checks --tag next
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
