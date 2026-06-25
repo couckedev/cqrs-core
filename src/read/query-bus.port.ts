@@ -1,3 +1,3 @@
 export interface QueryBusPort {
-  execute<QueryType, ResultType>(query: QueryType): Promise<ResultType>;
+	execute<QueryType, ResultType>(query: QueryType): Promise<ResultType>;
 }
