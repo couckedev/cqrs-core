@@ -24,7 +24,7 @@ describe("In memory command bus adapter", () => {
     });
   });
   describe("execute", () => {
-    it("should dispatch command on bus and execute its handler", () => {
+    it("should dispatch command on bus and execute its handler", async () => {
       const commandBus = new InMemoryCommandBus();
       let executedHandler = false;
       let executedCommand: Command | null = null;
@@ -39,7 +39,7 @@ describe("In memory command bus adapter", () => {
       };
       commandBus.subscribe(command.name, handler);
 
-      commandBus.execute(command);
+      await commandBus.execute(command);
 
       expect(executedHandler).toBeTruthy();
       expect(executedCommand).toStrictEqual(command);
@@ -53,7 +53,9 @@ describe("In memory command bus adapter", () => {
 
       const execution = () => commandBus.execute(command);
 
-      expect(execution).toThrow(new CommandNotSubscribedError(command.name));
+      expect(execution).rejects.toThrow(
+        new CommandNotSubscribedError(command.name),
+      );
     });
   });
 });

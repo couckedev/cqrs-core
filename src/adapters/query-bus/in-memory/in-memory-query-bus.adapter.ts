@@ -17,7 +17,9 @@ export class InMemoryQueryBus implements QueryBus {
     }
     this._subscriptions.set(queryName, handler);
   }
-  execute<QueryType extends Query, ReturnType>(query: QueryType): ReturnType {
+  async execute<QueryType extends Query, ReturnType>(
+    query: QueryType,
+  ): Promise<ReturnType> {
     const handler = this._subscriptions.get(
       query.name,
     ) as IQueryHandler<QueryType>;

@@ -11,7 +11,7 @@ export class InMemoryEventBus implements EventBus {
     const handlersToSet = [...existingHandlers, handler];
     this._subscriptions.set(eventName, handlersToSet);
   }
-  publish<EventType extends Event>(event: EventType): void {
+  async publish<EventType extends Event>(event: EventType): Promise<void> {
     const handlers = this._subscriptions.get(
       event.name,
     ) as IEventHandler<EventType>[];
