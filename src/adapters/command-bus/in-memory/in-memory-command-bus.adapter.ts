@@ -17,7 +17,9 @@ export class InMemoryCommandBus implements CommandBus {
     }
     this._subscriptions.set(commandName, handler);
   }
-  execute<CommandType extends Command>(command: CommandType): void {
+  async execute<CommandType extends Command>(
+    command: CommandType,
+  ): Promise<void> {
     const handler = this._subscriptions.get(
       command.name,
     ) as ICommandHandler<CommandType>;

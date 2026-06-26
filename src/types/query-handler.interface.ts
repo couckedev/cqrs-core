@@ -1,3 +1,3 @@
 export interface IQueryHandler<Query> {
-  execute<ReturnType>(query: Query): ReturnType;
+  execute<ReturnType>(query: Query): Promise<ReturnType>;
 }

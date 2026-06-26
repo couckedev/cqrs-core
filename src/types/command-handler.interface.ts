@@ -1,3 +1,3 @@
 export interface ICommandHandler<Command> {
-  execute(command: Command): void;
+  execute(command: Command): Promise<void>;
 }

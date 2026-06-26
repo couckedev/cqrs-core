@@ -23,7 +23,7 @@ describe("In memory query bus adapter", () => {
     });
   });
   describe("execute", () => {
-    it("should dispatch query on bus and execute its handler", () => {
+    it("should dispatch query on bus and execute its handler", async () => {
       const queryBus = new InMemoryQueryBus();
       let executedHandler = false;
       let executedQuery: Query | null = null;
@@ -38,13 +38,13 @@ describe("In memory query bus adapter", () => {
       };
       queryBus.subscribe(query.name, handler);
 
-      queryBus.execute(query);
+      await queryBus.execute(query);
 
       expect(executedHandler).toBeTruthy();
       expect(executedQuery).toStrictEqual(query);
     });
 
-    it("should throw error if query is not subscribed", () => {
+    it("should throw error if query is not subscribed", async () => {
       const queryBus = new InMemoryQueryBus();
       const query: Query = {
         name: "Query",
@@ -52,7 +52,9 @@ describe("In memory query bus adapter", () => {
 
       const execution = () => queryBus.execute(query);
 
-      expect(execution).toThrow(new QueryNotSubscribedError(query.name));
+      expect(execution).rejects.toThrow(
+        new QueryNotSubscribedError(query.name),
+      );
     });
   });
 });

@@ -4,7 +4,7 @@ import { InMemoryEventBus } from "./in-memory-event-bus.adapter.js";
 
 describe("In memory event bus adapter", () => {
   describe("execute", () => {
-    it("should dispatch event on bus and execute its handlers", () => {
+    it("should dispatch event on bus and execute its handlers", async () => {
       const eventBus = new InMemoryEventBus();
       const executedHandlers = {
         handler1: false,
@@ -33,7 +33,7 @@ describe("In memory event bus adapter", () => {
       eventBus.subscribe(event.name, handler2);
       eventBus.subscribe(event.name, handler3);
 
-      eventBus.publish(event);
+      await eventBus.publish(event);
 
       expect(executedHandlers.handler1).toBeTruthy();
       expect(executedHandlers.handler2).toBeTruthy();
