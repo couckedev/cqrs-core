@@ -1,30 +1,31 @@
-name: Publish unstable
+name: Publish stable
 
 on:
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
+  push:
+    tags:
+      - "v*.*.*"
+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to publish (e.g. v1.2.3)
+        required: true
+        type: string
 
 permissions:
   contents: read
   packages: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: publish
+  cancel-in-progress: false
 
 env:
   NODE_VERSION: 26
 
 jobs:
-  publish-unstable:
-    name: Publish unstable (next)
-    if: >
-      github.event.pull_request.merged &&
-      !startsWith(github.head_ref, 'release-please--')
-
+  publish:
+    name: Publish stable to GitHub Packages
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -32,7 +33,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -59,17 +60,17 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Bump version to prerelease
+      - name: Verify tag matches package version
+        if: github.event_name == 'push'
         run: |
-          SHORT_SHA="${GITHUB_SHA::7}"
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
-          PRERELEASE_VERSION="${CURRENT_VERSION}-next.${SHORT_SHA}"
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
 
-          npm version "$PRERELEASE_VERSION" \
-            --no-git-tag-version \
-            --allow-same-version
+          if [ "v${PACKAGE_VERSION}" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag (${GITHUB_REF_NAME}) does not match package version (v${PACKAGE_VERSION})"
+            exit 1
+          fi
 
-      - name: Publish unstable
-        run: pnpm publish --no-git-checks --tag next
+      - name: Publish stable
+        run: pnpm publish --no-git-checks --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
