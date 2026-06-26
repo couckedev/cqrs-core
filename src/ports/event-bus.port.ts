@@ -1,8 +1,11 @@
-import type { Event, IHandler } from "../types/index.js";
+import type { Event, IEventHandler } from "../types/index.js";
 
 export interface EventBus {
-  publish<EventType extends Event, ReturnType>(event: EventType): ReturnType;
-  subscribe<EventType extends Event, HandlerType extends IHandler<EventType>>(
+  publish<EventType extends Event>(event: EventType): void;
+  subscribe<
+    EventType extends Event,
+    HandlerType extends IEventHandler<EventType>,
+  >(
     eventName: string,
     handler: HandlerType,
   ): void;

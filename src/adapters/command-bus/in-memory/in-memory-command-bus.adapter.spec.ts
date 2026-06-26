@@ -3,7 +3,7 @@ import {
   CommandAlreadySubscribedError,
   CommandNotSubscribedError,
 } from "../../../errors/index.js";
-import type { Command, IHandler } from "../../../types/index.js";
+import type { Command, ICommandHandler } from "../../../types/index.js";
 import { InMemoryCommandBus } from "./in-memory-command-bus.adapter.js";
 
 describe("In memory command bus adapter", () => {
@@ -11,8 +11,8 @@ describe("In memory command bus adapter", () => {
     it("should throw error if command is already handled", () => {
       const commandBus = new InMemoryCommandBus();
       const handler = {
-        handle: async () => {},
-      } as IHandler<Command>;
+        execute: async () => {},
+      } as ICommandHandler<Command>;
       commandBus.subscribe("Command", handler);
 
       const invalidSubscription = () =>
@@ -29,11 +29,11 @@ describe("In memory command bus adapter", () => {
       let executedHandler = false;
       let executedCommand: Command | null = null;
       const handler = {
-        handle: async (command: Command) => {
+        execute: async (command: Command) => {
           executedHandler = true;
           executedCommand = command;
         },
-      } as IHandler<Command>;
+      } as ICommandHandler<Command>;
       const command: Command = {
         name: "Command",
       };

@@ -1,10 +1,10 @@
-import type { Command, IHandler } from "../types/index.js";
+import type { Command, ICommandHandler } from "../types/index.js";
 
 export interface CommandBus {
   execute<CommandType extends Command>(command: CommandType): void;
   subscribe<
     CommandType extends Command,
-    HandlerType extends IHandler<CommandType>,
+    HandlerType extends ICommandHandler<CommandType>,
   >(
     commandName: string,
     handler: HandlerType,
