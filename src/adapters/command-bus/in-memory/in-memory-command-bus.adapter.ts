@@ -3,13 +3,13 @@ import {
   CommandNotSubscribedError,
 } from "../../../errors/index.js";
 import type { CommandBus } from "../../../ports/index.js";
-import type { Command, IHandler } from "../../../types/index.js";
+import type { Command, ICommandHandler } from "../../../types/index.js";
 
 export class InMemoryCommandBus implements CommandBus {
-  private _subscriptions = new Map<string, IHandler<unknown>>();
+  private _subscriptions = new Map<string, ICommandHandler<unknown>>();
   subscribe<
     CommandType extends Command,
-    HandlerType extends IHandler<CommandType>,
+    HandlerType extends ICommandHandler<CommandType>,
   >(commandName: string, handler: HandlerType): void {
     const existingHandler = this._subscriptions.get(commandName);
     if (existingHandler) {
@@ -20,10 +20,10 @@ export class InMemoryCommandBus implements CommandBus {
   execute<CommandType extends Command>(command: CommandType): void {
     const handler = this._subscriptions.get(
       command.name,
-    ) as IHandler<CommandType>;
+    ) as ICommandHandler<CommandType>;
     if (!handler) {
       throw new CommandNotSubscribedError(command.name);
     }
-    handler.handle(command);
+    handler.execute(command);
   }
 }

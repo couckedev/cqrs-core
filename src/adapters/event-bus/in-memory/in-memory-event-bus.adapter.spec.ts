@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Event, IHandler } from "../../../types/index.js";
+import type { Event, IEventHandler } from "../../../types/index.js";
 import { InMemoryEventBus } from "./in-memory-event-bus.adapter.js";
 
 describe("In memory event bus adapter", () => {
@@ -15,17 +15,17 @@ describe("In memory event bus adapter", () => {
         handle: async () => {
           executedHandlers.handler1 = true;
         },
-      } as IHandler<Event>;
+      } as IEventHandler<Event>;
       const handler2 = {
         handle: async () => {
           executedHandlers.handler2 = true;
         },
-      } as IHandler<Event>;
+      } as IEventHandler<Event>;
       const handler3 = {
         handle: async () => {
           executedHandlers.handler3 = true;
         },
-      } as IHandler<Event>;
+      } as IEventHandler<Event>;
       const event: Event = {
         name: "Event",
       };
@@ -33,7 +33,7 @@ describe("In memory event bus adapter", () => {
       eventBus.subscribe(event.name, handler2);
       eventBus.subscribe(event.name, handler3);
 
-      eventBus.execute(event);
+      eventBus.publish(event);
 
       expect(executedHandlers.handler1).toBeTruthy();
       expect(executedHandlers.handler2).toBeTruthy();

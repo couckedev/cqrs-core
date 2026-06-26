@@ -1,20 +1,20 @@
-import type { CommandBus } from "../../../ports/index.js";
-import type { Command, IHandler } from "../../../types/index.js";
+import type { EventBus } from "../../../ports/index.js";
+import type { Event, IEventHandler } from "../../../types/index.js";
 
-export class InMemoryEventBus implements CommandBus {
-  private _subscriptions = new Map<string, IHandler<unknown>[]>();
+export class InMemoryEventBus implements EventBus {
+  private _subscriptions = new Map<string, IEventHandler<unknown>[]>();
   subscribe<
-    CommandType extends Command,
-    HandlerType extends IHandler<CommandType>,
-  >(commandName: string, handler: HandlerType): void {
-    const existingHandlers = this._subscriptions.get(commandName) ?? [];
+    EventType extends Event,
+    HandlerType extends IEventHandler<EventType>,
+  >(eventName: string, handler: HandlerType): void {
+    const existingHandlers = this._subscriptions.get(eventName) ?? [];
     const handlersToSet = [...existingHandlers, handler];
-    this._subscriptions.set(commandName, handlersToSet);
+    this._subscriptions.set(eventName, handlersToSet);
   }
-  execute<CommandType extends Command>(event: CommandType): void {
+  publish<EventType extends Event>(event: EventType): void {
     const handlers = this._subscriptions.get(
       event.name,
-    ) as IHandler<CommandType>[];
+    ) as IEventHandler<EventType>[];
     for (const handler of handlers) {
       handler.handle(event);
     }

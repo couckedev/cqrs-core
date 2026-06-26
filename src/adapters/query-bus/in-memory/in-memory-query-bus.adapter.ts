@@ -3,14 +3,14 @@ import {
   QueryNotSubscribedError,
 } from "../../../errors/index.js";
 import type { QueryBus } from "../../../ports/index.js";
-import type { IHandler, Query } from "../../../types/index.js";
+import type { IQueryHandler, Query } from "../../../types/index.js";
 
 export class InMemoryQueryBus implements QueryBus {
-  private _subscriptions = new Map<string, IHandler<unknown>>();
-  subscribe<QueryType extends Query, HandlerType extends IHandler<QueryType>>(
-    queryName: string,
-    handler: HandlerType,
-  ): void {
+  private _subscriptions = new Map<string, IQueryHandler<unknown>>();
+  subscribe<
+    QueryType extends Query,
+    HandlerType extends IQueryHandler<QueryType>,
+  >(queryName: string, handler: HandlerType): void {
     const existingHandler = this._subscriptions.get(queryName);
     if (existingHandler) {
       throw new QueryAlreadySubscribedError(queryName);
@@ -18,10 +18,12 @@ export class InMemoryQueryBus implements QueryBus {
     this._subscriptions.set(queryName, handler);
   }
   execute<QueryType extends Query, ReturnType>(query: QueryType): ReturnType {
-    const handler = this._subscriptions.get(query.name) as IHandler<QueryType>;
+    const handler = this._subscriptions.get(
+      query.name,
+    ) as IQueryHandler<QueryType>;
     if (!handler) {
       throw new QueryNotSubscribedError(query.name);
     }
-    return handler.handle<ReturnType>(query);
+    return handler.execute<ReturnType>(query);
   }
 }

@@ -3,7 +3,7 @@ import {
   QueryAlreadySubscribedError,
   QueryNotSubscribedError,
 } from "../../../errors/index.js";
-import type { IHandler, Query } from "../../../types/index.js";
+import type { IQueryHandler, Query } from "../../../types/index.js";
 import { InMemoryQueryBus } from "./in-memory-query-bus.adapter.js";
 
 describe("In memory query bus adapter", () => {
@@ -11,8 +11,8 @@ describe("In memory query bus adapter", () => {
     it("should throw error if query is already handled", () => {
       const queryBus = new InMemoryQueryBus();
       const handler = {
-        handle: async () => {},
-      } as IHandler<Query>;
+        execute: async () => {},
+      } as IQueryHandler<Query>;
       queryBus.subscribe("Query", handler);
 
       const invalidSubscription = () => queryBus.subscribe("Query", handler);
@@ -28,11 +28,11 @@ describe("In memory query bus adapter", () => {
       let executedHandler = false;
       let executedQuery: Query | null = null;
       const handler = {
-        handle: async (query: Query) => {
+        execute: async (query: Query) => {
           executedHandler = true;
           executedQuery = query;
         },
-      } as IHandler<Query>;
+      } as IQueryHandler<Query>;
       const query: Query = {
         name: "Query",
       };
