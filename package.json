@@ -1,59 +1,70 @@
 {
-	"name": "@couckedev/cqrs-core",
-	"version": "1.0.0",
-	"description": "CQRS minimal SDK",
-	"type": "module",
-	"main": "./dist/index.cjs",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
-			},
-			"require": {
-				"types": "./dist/index.d.cts",
-				"default": "./dist/index.cjs"
-			}
-		}
-	},
-	"files": [
-		"dist"
-	],
-	"scripts": {
-		"build": "tsup",
-		"dev": "tsup --watch",
-		"lint": "biome check .",
-		"lint:fix": "biome check --write .",
-		"format": "biome format --write .",
-		"test": "vitest run",
-		"test:watch": "vitest",
-		"test:coverage": "vitest run --coverage",
-		"typecheck": "tsc --noEmit"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^2.5.1",
-		"@eslint/js": "^9.22.0",
-		"@types/node": "^26",
-		"@vitest/coverage-v8": "^3.0.9",
-		"eslint": "^9.22.0",
-		"tsup": "^8.3.0",
-		"typescript": "~5.9.3",
-		"typescript-eslint": "^8.26.1",
-		"vitest": "^3.0.9"
-	},
-	"packageManager": "pnpm@10.32.1",
-	"engines": {
-		"node": ">=18"
-	},
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/couckedev/cqrs-core.git"
-	},
-	"publishConfig": {
-		"registry": "https://npm.pkg.github.com",
-		"access": "public"
-	}
+  "name": "@couckedev/cqrs-core",
+  "version": "1.0.0",
+  "description": "CQRS minimal SDK",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "pnpm tsc --noEmit",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint . --write",
+    "format": "biome format ."
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.js"
+    },
+    "./errors": {
+      "types": "./dist/errors/index.d.ts",
+      "default": "./dist/errors/index.js"
+    },
+    "./ports": {
+      "types": "./dist/ports/index.d.ts",
+      "default": "./dist/ports/index.js"
+    },
+    "./adapters": {
+      "types": "./dist/adapters/index.d.ts",
+      "default": "./dist/adapters/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.1",
+    "@eslint/js": "^9.22.0",
+    "@types/node": "^26",
+    "@vitest/coverage-v8": "^3.0.9",
+    "eslint": "^9.22.0",
+    "tsup": "^8.3.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.26.1",
+    "vitest": "^3.0.9"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=26"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/couckedev/cqrs-core.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "volta": {
+    "node": "26.4.0",
+    "pnpm": "10.32.1"
+  }
 }
