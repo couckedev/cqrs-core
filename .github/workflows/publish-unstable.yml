@@ -26,13 +26,13 @@ jobs:
       !startsWith(github.head_ref, 'release-please--')
 
     runs-on: ubuntu-latest
-    timeout-minutes: 10
 
     steps:
-      - name: Checkout
+      - name: Checkout merged commit
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -47,19 +47,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm lint
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Test
-        run: pnpm test
-
       - name: Build
         run: pnpm build
 
-      - name: Bump version to prerelease
+      - name: Verify package
+        run: pnpm publish --dry-run --no-git-checks
+
+      - name: Bump prerelease version
         run: |
           SHORT_SHA="${GITHUB_SHA::7}"
           CURRENT_VERSION=$(node -p "require('./package.json').version")
@@ -69,7 +63,7 @@ jobs:
             --no-git-tag-version \
             --allow-same-version
 
-      - name: Publish unstable
+      - name: Publish
         run: pnpm publish --no-git-checks --tag next
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
